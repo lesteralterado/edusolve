@@ -171,4 +171,52 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// PUT /api/videos/:id - Update video
+router.put('/:id', async (req, res) => {
+  try {
+    const { title, description, category, subcategory } = req.body;
+
+    const video = await Video.findByIdAndUpdate(
+      req.params.id,
+      { title, description, category, subcategory },
+      { new: true, runValidators: true }
+    );
+
+    if (!video) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    res.json(video);
+  } catch (error) {
+    console.error('Error updating video:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// DELETE /api/videos/:id - Delete video
+router.delete('/:id', async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id);
+    if (!video) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    // Delete from Cloudinary
+    try {
+      await cloudinary.uploader.destroy(video.publicId, { resource_type: 'video' });
+    } catch (cloudinaryError) {
+      console.error('Error deleting from Cloudinary:', cloudinaryError);
+      // Continue with DB deletion even if Cloudinary fails
+    }
+
+    // Delete from database
+    await Video.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Video deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting video:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
