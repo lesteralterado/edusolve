@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "npm start",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.0",
+    "cross-env": "^10.1.0",
     "postcss": "^8.4.0",
     "react-scripts": "5.0.1",
     "sucrase": "^3.34.0"
