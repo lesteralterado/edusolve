@@ -38,13 +38,8 @@ cloudinary.config({
 // Routes
 app.use('/api/videos', videoRoutes);
 
-// Serve static files from the React app build directory
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'));
-  });
-}
+// Static file serving removed for separate frontend deployment
+// Frontend deployed separately to Netlify/Vercel
 
 // Health check
 app.get('/api/health', (req, res) => {
