@@ -22,6 +22,49 @@ const TeacherSupportHub = () => {
     subcategory: '',
     videoFile: null
   });
+
+  // Module (Category) to Subcategory mapping
+  const moduleSubcategories = {
+    "Student's Diversity": [
+      "Difficulty in Communication",
+      "Attitudinal Concerns",
+      "Attention Difficulties"
+    ],
+    "Community Practices": [
+      "Lack of Support System",
+      "Large Numbers of Class"
+    ],
+    "Inadequate Resources and Training": [
+      "Limited Instructional Materials",
+      "Insufficient Teacher Training",
+      "Lack of Support Staff"
+    ],
+    "Teaching Strategies": [
+      "Direct Instruction",
+      "Cooperative Learning",
+      "Problem-Based Learning"
+    ],
+    "Differentiated Instruction": [
+      "Content Differentiation",
+      "Process Differentiation",
+      "Product Differentiation"
+    ],
+    "Individual Instruction": [
+      "One-on-One Tutoring",
+      "Personalized Learning Plans",
+      "Adaptive Technologies"
+    ],
+    "Mainstreaming": [
+      "Inclusion Strategies",
+      "Accommodation Techniques",
+      "IEP Implementation"
+    ],
+    "Peer Collaboration": [
+      "Peer Tutoring",
+      "Group Work Strategies",
+      "Collaborative Projects"
+    ]
+  };
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -231,9 +274,25 @@ const TeacherSupportHub = () => {
     setShowEditModal(true);
   };
 
+  const handleEditCategoryChange = (category) => {
+    setEditForm({
+      ...editForm,
+      category: category,
+      subcategory: '' // Reset subcategory when category changes
+    });
+  };
+
   const openDeleteConfirm = (video) => {
     setDeletingVideo(video);
     setShowDeleteConfirm(true);
+  };
+
+  const handleCategoryChange = (category) => {
+    setUploadForm({
+      ...uploadForm,
+      category: category,
+      subcategory: '' // Reset subcategory when category changes
+    });
   };
 
   if (currentPage === 'analytics') {
@@ -428,13 +487,22 @@ const TeacherSupportHub = () => {
                 <p className="text-xs sm:text-sm text-purple-300">Solutions for Common School Concerns</p>
               </div>
             </div>
-            <button
-              onClick={() => setCurrentPage('analytics')}
-              className="flex items-center space-x-2 px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg transition-all shadow-lg self-start sm:self-auto"
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Analytics</span>
-            </button>
+            <div className="flex space-x-2 self-start sm:self-auto">
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="flex items-center space-x-2 px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg"
+              >
+                <Play className="w-4 h-4" />
+                <span>Upload</span>
+              </button>
+              <button
+                onClick={() => setCurrentPage('analytics')}
+                className="flex items-center space-x-2 px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg transition-all shadow-lg"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>Analytics</span>
+              </button>
+            </div>
           </div>
           
           <div className="relative">
@@ -598,32 +666,33 @@ const TeacherSupportHub = () => {
               />
             </div>
             <div>
-              <label className="block text-purple-300 text-sm mb-1">Category</label>
+              <label className="block text-purple-300 text-sm mb-1">Module (Category)</label>
               <select
                 value={uploadForm.category}
-                onChange={(e) => setUploadForm({...uploadForm, category: e.target.value})}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-700 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               >
-                <option value="">Select Category</option>
-                <option value="Student's Diversity">Student's Diversity</option>
-                <option value="Community Practices">Community Practices</option>
-                <option value="Teaching Strategies">Teaching Strategies</option>
-                <option value="Differentiated Instruction">Differentiated Instruction</option>
-                <option value="Individual Instruction">Individual Instruction</option>
-                <option value="Mainstreaming">Mainstreaming</option>
-                <option value="Peer Colaboration">Peer Colaboration</option>
+                <option value="">Select Module</option>
+                {Object.keys(moduleSubcategories).map(module => (
+                  <option key={module} value={module}>{module}</option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-purple-300 text-sm mb-1">Subcategory</label>
-              <input
-                type="text"
+              <label className="block text-purple-300 text-sm mb-1">Topic (Subcategory)</label>
+              <select
                 value={uploadForm.subcategory}
                 onChange={(e) => setUploadForm({...uploadForm, subcategory: e.target.value})}
                 className="w-full px-3 py-2 bg-slate-700 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
-              />
+                disabled={!uploadForm.category}
+              >
+                <option value="">Select Topic</option>
+                {uploadForm.category && moduleSubcategories[uploadForm.category]?.map(topic => (
+                  <option key={topic} value={topic}>{topic}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-purple-300 text-sm mb-1">Video File</label>
@@ -690,28 +759,33 @@ const TeacherSupportHub = () => {
               />
             </div>
             <div>
-              <label className="block text-purple-300 text-sm mb-1">Category</label>
+              <label className="block text-purple-300 text-sm mb-1">Module (Category)</label>
               <select
                 value={editForm.category}
-                onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                onChange={(e) => handleEditCategoryChange(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-700 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               >
-                <option value="">Select Category</option>
-                <option value="Student's Diversity">Student's Diversity</option>
-                <option value="Community Practices">Community Practices</option>
-                <option value="Teaching Strategies">Teaching Strategies</option>
+                <option value="">Select Module</option>
+                {Object.keys(moduleSubcategories).map(module => (
+                  <option key={module} value={module}>{module}</option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-purple-300 text-sm mb-1">Subcategory</label>
-              <input
-                type="text"
+              <label className="block text-purple-300 text-sm mb-1">Topic (Subcategory)</label>
+              <select
                 value={editForm.subcategory}
                 onChange={(e) => setEditForm({...editForm, subcategory: e.target.value})}
                 className="w-full px-3 py-2 bg-slate-700 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
-              />
+                disabled={!editForm.category}
+              >
+                <option value="">Select Topic</option>
+                {editForm.category && moduleSubcategories[editForm.category]?.map(topic => (
+                  <option key={topic} value={topic}>{topic}</option>
+                ))}
+              </select>
             </div>
             <div className="flex space-x-3 pt-4">
               <button
