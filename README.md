@@ -89,11 +89,43 @@ The application is configured for production deployment:
 2. Set environment variables in Heroku dashboard
 3. Deploy the code (backend folder or root with Procfile)
 
-### Vercel/Netlify Deployment
+### Vercel Deployment (Frontend)
 
-- Deploy frontend to Vercel/Netlify
-- Deploy backend to Heroku/Railway
-- Update API_BASE_URL in frontend accordingly
+1. **Connect Repository:**
+   - Go to [Vercel](https://vercel.com)
+   - Import your Git repository
+   - Vercel will automatically detect it as a React app
+
+2. **Configure Build Settings:**
+   - Build Command: `npm run build`
+   - Output Directory: `build`
+   - Add environment variable: `CI=false`
+   - Add `REACT_APP_API_URL` with your backend URL
+
+3. **Deploy:**
+   - Vercel will build and deploy automatically
+   - Your app will be available at a `.vercel.app` URL
+
+### Netlify Deployment (Frontend)
+
+1. **Manual Deployment:**
+   - Go to [Netlify](https://netlify.com)
+   - Drag and drop the `frontend/build` folder to deploy instantly
+   - Or connect your Git repository and set build settings:
+     - Build command: `npm run build`
+     - Publish directory: `build`
+     - Add environment variable: `CI=false`
+
+2. **Update API URL:**
+   - After deploying backend, update `frontend/.env`:
+     ```
+     REACT_APP_API_URL=https://your-backend-app.herokuapp.com/api
+     ```
+   - Rebuild and redeploy frontend
+
+### Backend Deployment
+
+Deploy backend to Heroku/Railway with the provided Procfile and environment variables.
 
 ## Security Notes
 
